@@ -1,0 +1,25 @@
+﻿@model IEnumerable<MarkupPlan>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2 class="mb-5">Index</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+        </tr>
+    }
+    </tbody>
+</table>
+

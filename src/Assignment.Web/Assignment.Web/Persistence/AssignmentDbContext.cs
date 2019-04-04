@@ -13,5 +13,6 @@ namespace Assignment.Web.Persistence
         {
         }
         public DbSet<BusinessEntities> BusinessEntities { get; set; }
+        public DbSet<MarkupPlan> MarkupPlan { get; set; }
     }
 }

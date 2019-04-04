@@ -4,14 +4,16 @@ using Assignment.Web.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Assignment.Web.Migrations
 {
     [DbContext(typeof(AssignmentDbContext))]
-    partial class AssignmentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190404170823_Mig_MarkupPlanAdedd")]
+    partial class Mig_MarkupPlanAdedd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

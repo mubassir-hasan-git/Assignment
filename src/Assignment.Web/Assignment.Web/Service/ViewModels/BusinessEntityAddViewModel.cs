@@ -78,6 +78,8 @@ namespace Assignment.Web.Service.ViewModels
 
         [Range(0, Double.MaxValue)]
         public float CurrentBalance { get; set; }
+
+        public int MarkupPlanId { get; set; }
     }
 
     public class CheckBoxModel

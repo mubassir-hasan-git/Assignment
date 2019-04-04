@@ -3,6 +3,83 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Hello Agent</h2>
-<a asp-controller="Agent" asp-action="Add">Agent</a>
+<h2 class="mb-3">Hello Agent</h2>
+<a asp-controller="Agent" asp-action="Add" class="btn btn-info"><i class="fa fa-plus"></i> Add Agent</a>
 
+<table class="table" id="agentTable">
+    <thead>
+    <tr>
+        <th>Joined Date</th>
+        <th>Code</th>
+        <th>Name</th>
+        <th>Markup Plan</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Balance(BDT)</th>
+        <th></th>
+    </tr>
+    </thead>
+    
+</table>
+
+@section Css
+{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+}
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    
+    <script>
+        jQuery(function($) {
+            $(document).ready(function() {
+                var dataTable = $('#agentTable').DataTable({
+                    "processing": true, // for show processing bar
+                    "serverSide": true, // for process on server side
+                    "orderMulti": false, // for disable multi column order
+                    "dom":
+                        '<"top"i>rt<"bottom"lp><"clear">', // for hide default global search box // little confusion? don't worry I explained in the tutorial website
+                    "ajax": {
+                        "url": "/Agent/GetAgentsDatatable",
+                        "type": "POST",
+                        "datatype": "json",
+                        "data": function (d) {
+                            d.searchString = $("#searchString").val();
+                            d.dateRange = $("#txtDate").val();
+                            d.minAmount = $("#minAmount").val();
+                            d.maxAmount = $("#maxAmount").val();
+                            d.contactId = $("#contact").val();
+                            d.categoryId = $("#category").val();
+                        }
+                    },
+                    "columns": [
+                        { "data": "joinDate", "name": "joinDate" }, //index 0
+                        { "data": "code", "name": "code"}, //index 1
+                        { "data": "name", "name": "name"}, //index 2
+                        { "data": "markupPlanName", "name": "markupPlanName" }, //index 3
+                        { "data": "mobile", "name": "mobile" }, //index 3
+                        { "data": "email", "name": "email" }, //index 3
+                        { "data": "balance", "name": "balance" }, //index 3
+                        {
+                            "mData": null,
+                            "bSortable": false,
+                            "mRender": function (data, type, full) {
+                                return '' +
+                                    /*'<a href="#" class="btn btn-outline-info m-2"><i class="fas fa-edit"></i> Edit</a>' +*/
+                                    '<a class="text-info pr-2" data-toggle="modal" data-target="#modalPopup"  href="#"><i class="fa fa-envelope"></i></a>' +
+                                    '<a href="/Agent/Delete?agentId=' +
+                                    data['businessEntityId'] +
+                                    '" class="text-info pr-2"><i class="fa fa-times"></i></a>' +
+                                    '<a class="text-info pr-2" id="add" data-toggle="modal" data-target="#modalPopup"  href="/Agent/Edit?agentId=' +
+                                    data['businessEntityId'] +
+                                    '"><i class="fa fa-edit"></i></a>';
+                            }
+                        } //index 3
+                    ]
+                });
+            });
+        })
+    </script>
+}

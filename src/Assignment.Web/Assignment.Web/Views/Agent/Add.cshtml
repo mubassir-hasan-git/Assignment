@@ -40,47 +40,50 @@
     <div class="tab-pane fade show active mt-5" id="home" role="tabpanel" aria-labelledby="home-tab">
         <form id="agentForm" method="post"  enctype="multipart/form-data">
         <div class="row">
+        <div class="col-12">
+            <h4 class="text-danger" id="errorMessage"></h4>
+        </div>
         <!--Left Col-->
         <div class="col-6">
             <div class="form-row">
                 <label class="col-3">ID/Code</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="code" />
+                    <input type="text" class="form-control" name="code"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Name</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="name" />
+                    <input type="text" class="form-control" name="name"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Markup Plan</label>
                 <div class="col">
-                    <select class="form-control" name="markUpPlan"></select>
+                    <select class="form-control" name="markupPlanId" asp-items="@ViewBag.MarkupPlans"></select>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Email</label>
                 <div class="col">
-                    <input type="email" class="form-control" name="email" />
+                    <input type="email" class="form-control" name="email"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Mobile</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="mobile" />
+                    <input type="text" class="form-control" name="mobile"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Phone</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="phone" />
+                    <input type="text" class="form-control" name="phone"/>
                 </div>
             </div>
 
@@ -94,85 +97,85 @@
             <div class="form-row">
                 <label class="col-3">city</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="city" />
+                    <input type="text" class="form-control" name="city"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">State</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="state" />
+                    <input type="text" class="form-control" name="state"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Country</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="country" />
+                    <input type="text" class="form-control" name="country"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Zip/Postal Code</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="zip" />
+                    <input type="text" class="form-control" name="zip"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Logo</label>
                 <div class="col">
-                    <input type="file" id="logoFile" class="form-control" name="logoFile" />
+                    <input type="file" id="logoFile" class="form-control" name="logoFile"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Contact Person</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="contactPerson" />
+                    <input type="text" class="form-control" name="contactPerson"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Referred By</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="referredBy" />
+                    <input type="text" class="form-control" name="referredBy"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Balance</label>
                 <div class="col">
-                    <input type="number" value="0" class="form-control text-right" name="balance" />
+                    <input type="number" value="0" class="form-control text-right" name="balance"/>
                 </div>
             </div>
 
-            <hr />
+            <hr/>
             <div class="form-row">
                 <label class="col-3">SMTP Server</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpServer" />
+                    <input type="text" class="form-control" name="smtpServer"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Port</label>
                 <div class="col">
-                    <input type="number" value="0" class="form-control" name="smtpPort" />
+                    <input type="number" value="0" class="form-control" name="smtpPort"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Username</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpUsername" />
+                    <input type="text" class="form-control" name="smtpUsername"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Password</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpPassword" />
+                    <input type="text" class="form-control" name="smtpPassword"/>
                 </div>
             </div>
 
@@ -228,12 +231,12 @@
                     <div class="form-check-inline form-check status">
                         @foreach (var item in ViewBag.StatusList)
                         {
-                            <label  class="form-check-label ">
+                            <label class="form-check-label ">
                                 <input type="checkbox" name="status" value="@item.Value" checked="@item.IsChecked" class="form-check-input">@item.Text
                             </label>
                         }
                     </div>
-                    
+
                     <div class="statusError"></div>
                 </div>
             </div>
@@ -278,7 +281,7 @@
             var fileInput = $('#logoFile')[0];
             var file = fileInput.files[0];
 
-            var formData = $(form).serialize();
+            
 
             $("#agentForm").validate({
                 rules: {
@@ -299,6 +302,14 @@
                     },
                     status: {
                         required:true
+                    },
+                    balance: {
+                        required: true,
+                        min:0
+                    },
+                    port: {
+                        required: true,
+                        min: 0
                     }
                 },
                 messages: {
@@ -328,9 +339,20 @@
                     $.ajax({
                         url: "/Agent/Add",
                         type: "POST",
-                        data: { model: formData, logoFile:file},
-                        success: function(response) {
-                            $('#answers').html(response);
+                        data: $(form).serialize(),
+                        success: function (response) {
+                            console.log(response);
+                            $("#errorMessage").text(response.message);
+                            $("#errorMessage").focus();
+                            if (!response.success) {
+                                
+                                $("#errorMessage").addClass("text-danger");
+                                $("#errorMessage").removeClass("text-success");
+                                return;
+                            }
+                            
+                            $("#errorMessage").removeClass("text-danger");
+                            $("#errorMessage").addClass("text-success");
                         }            
                     });
                 }

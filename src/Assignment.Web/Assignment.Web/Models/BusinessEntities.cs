@@ -74,12 +74,17 @@ namespace Assignment.Web.Models
         public string SMTPPassword { get; set; }
 
         public bool Deleted { get; set; }
-
         
+        //customize foreign key markup plan
+        public int MarkupPlanId { get; set; }
+
+
         public DateTime CreatedOnUtc { get; set; }
         public DateTime UpdatedOnUtc { get; set; }
         public float CurrentBalance { get; set; }
 
+
+        public MarkupPlan MarkupPlan { get; set; }
     }
 
     public enum BusinessStatus

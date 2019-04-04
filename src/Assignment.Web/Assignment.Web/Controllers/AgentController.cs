@@ -5,10 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Assignment.Web.Models;
 using Assignment.Web.Persistence;
+using Assignment.Web.Service.Helper;
 using Assignment.Web.Service.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment.Web.Controllers
 {
@@ -28,6 +31,69 @@ namespace Assignment.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Get 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<JsonResult> GetAgentsDatatable(AgentDatatableViewModel model)
+        {
+            var queryAgent = _context.BusinessEntities
+                .Include(m=>m.MarkupPlan)
+                .AsQueryable();
+
+            //searching
+            //search by code
+            if (!string.IsNullOrWhiteSpace(model.Code))
+                queryAgent = queryAgent.Where(a =>
+                    a.Code.StartsWith(model.Code, StringComparison.CurrentCultureIgnoreCase));
+            //search by name
+            if(!string.IsNullOrWhiteSpace(model.Name))
+                queryAgent = queryAgent.Where(a =>
+                    a.Code.Contains(model.Name, StringComparison.CurrentCultureIgnoreCase));
+            //search by markup plan
+            if (model.MarkUpId>0)
+                queryAgent = queryAgent.Where(a =>
+                    a.MarkupPlanId.Equals(model.MarkUpId));
+
+            //todo ordering table
+
+            //total agents
+            var recordsTotal = await queryAgent.CountAsync();
+
+            //format as Viewmodel
+            var pagedAgents =await queryAgent
+                .OrderByDescending(o => o.CreatedOnUtc)
+                .Skip(model.start)
+                .Take(model.length)
+                .ToListAsync();
+
+            //number of agents now showing
+            var recordsFiltered = await queryAgent.CountAsync();
+
+            var data=pagedAgents.Select(agent => new AgentListViewModel
+            {
+                Name = agent.Name,
+                Code = agent.Code,
+                MarkupPlanId = agent.MarkupPlanId,
+                Balance = agent.Balance,
+                BusinessEntityId = agent.BusinessId,
+                Email = agent.Email,
+                JoinDate = agent.CreatedOnUtc.ToShortDateString(),
+                MarkupPlanName = agent.MarkupPlan.Name,
+                Mobile = agent.Mobile
+            }).ToList();
+
+            return Json(new
+            {
+                draw = model.draw,
+                recordsFiltered = recordsFiltered,
+                recordsTotal = recordsTotal,
+                data = data
+            });
+        }
+
         public IActionResult Add()
         {
 
@@ -38,6 +104,9 @@ namespace Assignment.Web.Controllers
                 Value = name
             });
 
+            var markupPlans = _context.MarkupPlan.ToList();
+
+            ViewBag.MarkupPlans = markupPlans.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
             return View();
         }
 
@@ -74,23 +143,17 @@ namespace Assignment.Web.Controllers
                     UpdatedOnUtc = DateTime.UtcNow,
                     SecurityCode = model.SecurityCode,
                     Zip = model.Zip,
-                    Logo =await UploadFile(model.LogoFile,model.Name),
+                    MarkupPlanId = model.MarkupPlanId,
+                    Logo =await UploadFile(logoFile,model.Name),
                 };
                 await _context.BusinessEntities.AddAsync(businessEntity);
                 await _context.SaveChangesAsync();
                 return Json(new {success = true,message="Successfully Added to Agent"});
             }
 
-            var errorMessage = string.Empty;
-            foreach (var modelStateVal in ViewData.ModelState.Values)
-            {
-                foreach (var error in modelStateVal.Errors)
-                {
-                    errorMessage=errorMessage+ error.ErrorMessage+ " </br>";
-                    // You may log the errors if you want
-                }
-            }
-            return Json(new { success = false, message = errorMessage });
+            
+            
+            return Json(new { success = false, message = "Something Wrong please check all Inputs" });
         }
 
        
