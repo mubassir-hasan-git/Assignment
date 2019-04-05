@@ -9,7 +9,7 @@ Visual Studio 2017
 
 If requirement is filled then update database from package manager console
 
-`PM> update-database`
+```PM> update-database```
 after migrating hit `F5`
 
 # Folder Description
@@ -23,6 +23,6 @@ Contain all entity
 Contain Database connection info and Seed Data
 Database Initilized at StartUp class
 
-### Serice
+### Service
 
 Contain Helper, mapper configuration and Viewmodels
