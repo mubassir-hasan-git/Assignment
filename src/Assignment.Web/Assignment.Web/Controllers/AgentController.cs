@@ -54,7 +54,8 @@ namespace Assignment.Web.Controllers
         {
             var queryAgent = _context.BusinessEntities
                 .Include(m=>m.MarkupPlan)
-                .AsQueryable();
+                .AsQueryable()
+                .Where(a=>!a.Deleted);
 
             //searching
             //search by code
@@ -283,7 +284,7 @@ namespace Assignment.Web.Controllers
             var agent = await _context.BusinessEntities.FirstOrDefaultAsync(f => f.BusinessId.Equals(agentId));
             if (agent == null) return NotFound();
 
-            _context.BusinessEntities.Remove(agent);
+            agent.Deleted = true;
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Agent");
 
