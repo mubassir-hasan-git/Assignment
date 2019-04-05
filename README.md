@@ -26,3 +26,17 @@ Database Initilized at StartUp class
 ### Service
 
 Contain Helper, mapper configuration and Viewmodels
+
+# Demo Images
+
+## Agent List
+![GitHub Logo](/images/agentlist.PNG)
+
+## Add
+![GitHub Logo](/images/add-agent.PNG)
+
+## Edit
+![GitHub Logo](/images/edit.PNG)
+
+## Delete
+![GitHub Logo](/images/delete.PNG)
