@@ -10,7 +10,7 @@ namespace Assignment.Web.Service.ViewModels
 {
     public class BusinessEntityAddViewModel
     {
-       
+        
         public string Code { get; set; }
 
         [DataType(DataType.EmailAddress)]
@@ -30,7 +30,7 @@ namespace Assignment.Web.Service.ViewModels
 
         [MaxLength(50)]
         public string Zip { get; set; }
-
+        public string Address { get; set; }
         [MaxLength(150)]
         public string Country { get; set; }
 

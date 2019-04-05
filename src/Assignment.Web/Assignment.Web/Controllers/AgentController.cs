@@ -7,6 +7,7 @@ using Assignment.Web.Models;
 using Assignment.Web.Persistence;
 using Assignment.Web.Service.Helper;
 using Assignment.Web.Service.ViewModels;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,19 +16,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Assignment.Web.Controllers
 {
+    /// <summary>
+    /// GetAgentsDatatable used a custom class for passing jQuery Datatable parameters
+    ///
+    /// Edit and Add operation handled by Add Method
+    /// 
+    /// </summary>
     public class AgentController : Controller
     {
         private readonly AssignmentDbContext _context;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IMapper _mapper;
 
-        public AgentController(AssignmentDbContext context, IHostingEnvironment hostingEnvironment)
+        public AgentController(AssignmentDbContext context, IHostingEnvironment hostingEnvironment, IMapper mapper)
         {
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _mapper = mapper;
         }
+
 
         public IActionResult Index()
         {
+            var markupPlans = _context.MarkupPlan.ToList();
+
+            ViewBag.MarkupPlans = markupPlans.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
             return View();
         }
 
@@ -60,7 +73,7 @@ namespace Assignment.Web.Controllers
             //todo ordering table
 
             //total agents
-            var recordsTotal = await queryAgent.CountAsync();
+            var recordsTotal =  queryAgent.Count();
 
             //format as Viewmodel
             var pagedAgents =await queryAgent
@@ -70,7 +83,7 @@ namespace Assignment.Web.Controllers
                 .ToListAsync();
 
             //number of agents now showing
-            var recordsFiltered = await queryAgent.CountAsync();
+            var recordsFiltered =  queryAgent.Count();
 
             var data=pagedAgents.Select(agent => new AgentListViewModel
             {
@@ -94,24 +107,42 @@ namespace Assignment.Web.Controllers
             });
         }
 
-        public IActionResult Add()
+
+        /// <summary>
+        /// Adding or Editing Agent
+        /// </summary>
+        /// <param name="agentId">For editing agent must be provide an agent Id</param>
+        /// <returns></returns>
+        public async Task<IActionResult> Add(int? agentId)
         {
+            //model dropdowns
+            PopulateDropdown();
 
-            ViewBag.StatusList = Enum.GetNames(typeof(BusinessStatus)).Select(name => new CheckBoxModel
-            {
-                IsChecked = false,
-                Text = name,
-                Value = name
-            });
+            var model=new BusinessEntityAddViewModel();
+            if (agentId == null) return View(model);
 
-            var markupPlans = _context.MarkupPlan.ToList();
+            var agent = await _context.BusinessEntities.FirstOrDefaultAsync(f => f.BusinessId == agentId);
+            if (agent == null)
+                return NotFound();
+            PopulateDropdown(agent.Status);
+            model = _mapper.Map<BusinessEntityAddViewModel>(agent);
+            ViewBag.AgentId = agent.BusinessId;
+            
+            return View(model);
 
-            ViewBag.MarkupPlans = markupPlans.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
-            return View();
         }
 
+        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="agentId">Agent id set in hidden field </param>
+        /// <returns></returns>
+
         [HttpPost]
-        public async Task<JsonResult> Add(BusinessEntityAddViewModel model,IFormFile logoFile)
+        public async Task<JsonResult> Add(BusinessEntityAddViewModel model,int? agentId)
         {
             if (ModelState.IsValid)
             {
@@ -119,6 +150,30 @@ namespace Assignment.Web.Controllers
                  *Flight APIs, Agent Type, Markup Plan is skipped
                  *Because of not matching with Business Entity Data
                  */
+                //Edit
+                if (agentId!=null)
+                {
+                    var dbAgent = await _context.BusinessEntities.FirstOrDefaultAsync(f => f.BusinessId == agentId);
+                    if (dbAgent == null)
+                        return Json(new { success = false, message = "Can't find this agent" });
+                    dbAgent = _mapper.Map(model,dbAgent);
+                    dbAgent.UpdatedOnUtc = DateTime.UtcNow;
+
+                    try
+                    {
+                        _context.Update(dbAgent);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        //log
+                        Console.WriteLine(e.Message);
+                        return Json(new { success = false, message = "Can't update the agent" });
+                    }
+                     
+                    return Json(new { success = true, message = "Successfully Updated Agent" });
+                }
+
 
                 var businessEntity =new BusinessEntities
                 {
@@ -144,11 +199,11 @@ namespace Assignment.Web.Controllers
                     SecurityCode = model.SecurityCode,
                     Zip = model.Zip,
                     MarkupPlanId = model.MarkupPlanId,
-                    Logo =await UploadFile(logoFile,model.Name),
+                    Logo =await UploadFile(model.LogoFile,model.Name),
                 };
                 await _context.BusinessEntities.AddAsync(businessEntity);
                 await _context.SaveChangesAsync();
-                return Json(new {success = true,message="Successfully Added to Agent"});
+                return Json(new {success = true,message="Successfully Added Agent"});
             }
 
             
@@ -156,8 +211,24 @@ namespace Assignment.Web.Controllers
             return Json(new { success = false, message = "Something Wrong please check all Inputs" });
         }
 
-       
+        /// <summary>
+        /// Populate dropdown for add and edit model
+        /// </summary>
+        /// <param name="status"></param>
+        private void PopulateDropdown(BusinessStatus status=0)
+        {
+            ViewBag.StatusList = Enum.GetNames(typeof(BusinessStatus)).Select(name => new CheckBoxModel
+            {
+                //get enum from string using
+                IsChecked = status.Equals(EnumHelper.ParseEnum<BusinessStatus>(name)),
+                Text = name,
+                Value = name
+            });
 
+            var markupPlans = _context.MarkupPlan.ToList();
+
+            ViewBag.MarkupPlans = markupPlans.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
+        }
         private async Task<string> UploadFile(IFormFile image, string agentName)
         {
             if (image == null || image.Length <= 0) return "defaultAgent.png";
@@ -181,5 +252,43 @@ namespace Assignment.Web.Controllers
 
             return fileName;
         }
+
+        
+
+
+        #region Delete
+
+        public async Task<IActionResult> Delete(int agentId)
+        {
+            if (agentId<=0)
+            {
+                return BadRequest();
+            }
+
+            var agent = await _context.BusinessEntities.FirstOrDefaultAsync(f => f.BusinessId.Equals(agentId));
+            if (agent == null) return NotFound();
+
+            ViewBag.AgentId = agent.BusinessId;
+            ViewBag.AgentName = agent.Name;
+            return PartialView("_Delete");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int agentId,IFormCollection form)
+        {
+            if (agentId <= 0)
+            {
+                return BadRequest();
+            }
+            var agent = await _context.BusinessEntities.FirstOrDefaultAsync(f => f.BusinessId.Equals(agentId));
+            if (agent == null) return NotFound();
+
+            _context.BusinessEntities.Remove(agent);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Agent");
+
+        }
+
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿
+﻿@model Assignment.Web.Service.ViewModels.BusinessEntityAddViewModel
+
 @{
     ViewData["Title"] = "Add";
 
@@ -40,85 +41,85 @@
     <div class="tab-pane fade show active mt-5" id="home" role="tabpanel" aria-labelledby="home-tab">
         <form id="agentForm" method="post"  enctype="multipart/form-data">
         <div class="row">
-        <div class="col-12">
-            <h4 class="text-danger" id="errorMessage"></h4>
+        <div class="col-12" id="errorDiv">
+            <h4 class="text-danger mb-4" id="errorMessage"></h4>
         </div>
         <!--Left Col-->
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <div class="form-row">
                 <label class="col-3">ID/Code</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="code"/>
+                    <input type="text" class="form-control" asp-for="Code" name="code"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Name</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="name"/>
+                    <input type="text" asp-for="Name" class="form-control" name="name"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Markup Plan</label>
                 <div class="col">
-                    <select class="form-control" name="markupPlanId" asp-items="@ViewBag.MarkupPlans"></select>
+                    <select class="form-control"  asp-for="MarkupPlanId" name="markupPlanId"  asp-items="@ViewBag.MarkupPlans"></select>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Email</label>
                 <div class="col">
-                    <input type="email" class="form-control" name="email"/>
+                    <input type="email" asp-for="Email" class="form-control" name="email"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Mobile</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="mobile"/>
+                    <input type="text" asp-for="Mobile" class="form-control" name="mobile"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Phone</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="phone"/>
+                    <input type="text" asp-for="Phone" class="form-control" name="phone"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Address</label>
                 <div class="col">
-                    <textarea class="form-control" name="address"></textarea>
+                    <textarea class="form-control" asp-for="Address" name="address"></textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">city</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="city"/>
+                    <input type="text" asp-for="City" class="form-control" name="city"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">State</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="state"/>
+                    <input type="text" asp-for="State" class="form-control" name="state"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Country</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="country"/>
+                    <input type="text" asp-for="Country" class="form-control" name="country"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Zip/Postal Code</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="zip"/>
+                    <input type="text" asp-for="Zip" class="form-control" name="zip"/>
                 </div>
             </div>
 
@@ -132,21 +133,21 @@
             <div class="form-row">
                 <label class="col-3">Contact Person</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="contactPerson"/>
+                    <input type="text" asp-for="ContactPerson" class="form-control" name="contactPerson"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Referred By</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="referredBy"/>
+                    <input type="text" asp-for="ReferredBy" class="form-control" name="referredBy"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">Balance</label>
                 <div class="col">
-                    <input type="number" value="0" class="form-control text-right" name="balance"/>
+                    <input type="number" asp-for="Balance"  class="form-control text-right" name="balance"/>
                 </div>
             </div>
 
@@ -154,28 +155,28 @@
             <div class="form-row">
                 <label class="col-3">SMTP Server</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpServer"/>
+                    <input type="text" asp-for="SMTPServer" class="form-control" name="smtpServer"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Port</label>
                 <div class="col">
-                    <input type="number" value="0" class="form-control" name="smtpPort"/>
+                    <input type="number" asp-for="SMTPPort"  class="form-control" name="smtpPort"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Username</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpUsername"/>
+                    <input type="text" asp-for="SMTPUsername" class="form-control" name="smtpUsername"/>
                 </div>
             </div>
 
             <div class="form-row">
                 <label class="col-3">SMTP Password</label>
                 <div class="col">
-                    <input type="text" class="form-control" name="smtpPassword"/>
+                    <input type="text" asp-for="SMTPPassword" class="form-control" name="smtpPassword"/>
                 </div>
             </div>
 
@@ -183,7 +184,7 @@
 
 
         <!--Right Col-->
-        <div class="col-6">
+        <div class="col-12 col-md-6">
 
             <div class="form-row">
                 <div class="col-12">
@@ -232,7 +233,7 @@
                         @foreach (var item in ViewBag.StatusList)
                         {
                             <label class="form-check-label ">
-                                <input type="checkbox" name="status" value="@item.Value" checked="@item.IsChecked" class="form-check-input">@item.Text
+                                <input type="checkbox"  name="status" value="@item.Value" checked="@item.IsChecked" class="form-check-input">@item.Text
                             </label>
                         }
                     </div>
@@ -240,7 +241,7 @@
                     <div class="statusError"></div>
                 </div>
             </div>
-
+            <input type="hidden" name="agentId" value="@ViewBag.AgentId"/>
 
         </div>
         </div>
@@ -343,7 +344,13 @@
                         success: function (response) {
                             console.log(response);
                             $("#errorMessage").text(response.message);
-                            $("#errorMessage").focus();
+
+
+                            //scroll back to error message
+                            $('html, body').animate({
+                                scrollTop: $("#myTab").offset().top
+                            }, 1000);
+
                             if (!response.success) {
                                 
                                 $("#errorMessage").addClass("text-danger");

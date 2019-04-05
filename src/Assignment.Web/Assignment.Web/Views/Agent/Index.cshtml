@@ -3,9 +3,27 @@
     ViewData["Title"] = "Index";
 }
 
-<h2 class="mb-3">Hello Agent</h2>
-<a asp-controller="Agent" asp-action="Add" class="btn btn-info"><i class="fa fa-plus"></i> Add Agent</a>
 
+<a asp-controller="Agent" asp-action="Add" class="btn btn-info mb-5"><i class="fa fa-plus"></i> Add Agent</a>
+<a asp-controller="MarkupPlan" asp-action="Index" class="btn btn-info mb-5"><i class="fa fa-plus"></i> Markup Plans</a>
+<div class="row">
+    
+    <div class="col-2">
+            <input type="text" class="form-control" placeholder="Code" id="code"/>
+    </div>
+    <div class="col-2">
+        <input type="text" class="form-control" placeholder="Name" id="name" />
+    </div>
+    <div class="col-3">
+        <select class="form-control" id="markupPlan" asp-items="@ViewBag.MarkupPlans">
+            <option value="0">--Select--</option>
+        </select>
+    </div>
+    <div class="col-1">
+        <button class="btn btn-info btn-lg" id="btnSearch"><i class="fa fa-search "></i></button>
+    </div>
+    <div class="col"></div>
+</div>
 <table class="table" id="agentTable">
     <thead>
     <tr>
@@ -22,6 +40,17 @@
     
 </table>
 
+<!--Modal for deleting Agent-->
+<div class="modal" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+           
+        </div>
+    </div>
+</div>
+<!--End of Modal for deleting Agent-->
+
 @section Css
 {
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
@@ -33,8 +62,9 @@
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
     
     <script>
-        jQuery(function($) {
-            $(document).ready(function() {
+        jQuery(function ($) {
+            $(document).ready(function () {
+
                 var dataTable = $('#agentTable').DataTable({
                     "processing": true, // for show processing bar
                     "serverSide": true, // for process on server side
@@ -46,18 +76,15 @@
                         "type": "POST",
                         "datatype": "json",
                         "data": function (d) {
-                            d.searchString = $("#searchString").val();
-                            d.dateRange = $("#txtDate").val();
-                            d.minAmount = $("#minAmount").val();
-                            d.maxAmount = $("#maxAmount").val();
-                            d.contactId = $("#contact").val();
-                            d.categoryId = $("#category").val();
+                            d.name = $("#name").val();
+                            d.code = $("#code").val();
+                            d.markUpId = $("#markupPlan").val();
                         }
                     },
                     "columns": [
                         { "data": "joinDate", "name": "joinDate" }, //index 0
-                        { "data": "code", "name": "code"}, //index 1
-                        { "data": "name", "name": "name"}, //index 2
+                        { "data": "code", "name": "code" }, //index 1
+                        { "data": "name", "name": "name" }, //index 2
                         { "data": "markupPlanName", "name": "markupPlanName" }, //index 3
                         { "data": "mobile", "name": "mobile" }, //index 3
                         { "data": "email", "name": "email" }, //index 3
@@ -69,17 +96,66 @@
                                 return '' +
                                     /*'<a href="#" class="btn btn-outline-info m-2"><i class="fas fa-edit"></i> Edit</a>' +*/
                                     '<a class="text-info pr-2" data-toggle="modal" data-target="#modalPopup"  href="#"><i class="fa fa-envelope"></i></a>' +
-                                    '<a href="/Agent/Delete?agentId=' +
+                                    '<a data-toggle="modal" data-target="#deleteModal" href="/Agent/Delete?agentId=' +
                                     data['businessEntityId'] +
                                     '" class="text-info pr-2"><i class="fa fa-times"></i></a>' +
-                                    '<a class="text-info pr-2" id="add" data-toggle="modal" data-target="#modalPopup"  href="/Agent/Edit?agentId=' +
+                                    '<a class="text-info pr-2" id="add" href="/Agent/Add?agentId=' +
                                     data['businessEntityId'] +
                                     '"><i class="fa fa-edit"></i></a>';
                             }
                         } //index 3
                     ]
                 });
+
+                $("#btnSearch").click(function () {
+                    dataTable.draw();
+                });
+                /*
+                 *
+                 Delete Agent
+                 *
+                 */
+
+
             });
-        })
+
+            (function ($) {
+                function ModalInit() {
+                    var $this = this;
+                    function initilizeModel() {
+                        $("#").on('loaded.bs.modal', function (e) {
+                        }).on('hidden.bs.modal', function (e) {
+                            $(this).removeData('bs.modal');
+                        });
+                    }
+                    $this.init = function () {
+                        initilizeModel();
+                    }
+                }
+                $(function () {
+                    var self = new ModalInit();
+                    self.init();
+                })
+            }(jQuery))
+            $(function () {
+                // boostrap 4 load modal example from docs
+                $("#deleteModal").on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); // Button that triggered the modal
+                    var url = button.attr("href");
+                    var modal = $(this);
+                    // note that this will replace the content of modal-content everytime the modal is opened
+                    modal.find('.modal-content').load(url);
+                });
+                $("#deleteModal").on('hidden.bs.modal', function () {
+                    // remove the bs.modal data attribute from it
+
+                    $(this).removeData('bs.modal');
+                    // and empty the modal-content element
+                    /**/
+                    $("#deleteModal .modal-content").empty();
+        /**/
+    });
+});
+})
     </script>
 }
